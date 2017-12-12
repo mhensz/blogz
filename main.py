@@ -45,8 +45,7 @@ def newpost():
         db.session.add(blog_post)
         db.session.commit()
 
-        curr_post = Blog.query.filter_by(title=title).first()
-        return redirect('/blog?id=' + str(curr_post.id))
+        return redirect('/blog?id=' + str(blog_post.id))
     else:
         return render_template('newpost.html')
 if __name__=='__main__':
