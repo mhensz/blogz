@@ -6,6 +6,7 @@ app = Flask(__name__)
 app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:Weresloth1!@localhost:8889/build-a-blog'
 app.config['SQLALCHEMY_ECHO'] = True
+app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RU'
 
 db = SQLAlchemy(app)
 
@@ -41,11 +42,15 @@ def newpost():
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['blog-body']
-        blog_post = Blog(title,body)
-        db.session.add(blog_post)
-        db.session.commit()
+        if title == "" or body == "":
+            flash("Title and Body cannot be empty")
+            return redirect('/newpost')
+        else:
+            blog_post = Blog(title,body)
+            db.session.add(blog_post)
+            db.session.commit()
 
-        return redirect('/blog?id=' + str(blog_post.id))
+            return redirect('/blog?id=' + str(blog_post.id))
     else:
         return render_template('newpost.html')
 if __name__=='__main__':
