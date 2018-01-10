@@ -4,23 +4,33 @@ import cgi
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:Weresloth1!@localhost:8889/build-a-blog'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:Weresloth1!@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RU'
 
 db = SQLAlchemy(app)
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    user_name = db.Column(db.String(120), unique = True)
+    password = db.Column(db.String(120))
+    blogs = db.relationship('Blog', backref='owner')
+
 class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
     body = db.Column(db.Text())
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self,title,body):
+    def __init__(self,title,body,owner):
         self.title = title
         self.body = body
+        self.owner = owner
 
     def __repr__(self):
         return '<Blog %r>' % self.title
+
+
 
 @app.route('/')
 def index():
@@ -53,5 +63,30 @@ def newpost():
             return redirect('/blog?id=' + str(blog_post.id))
     else:
         return render_template('newpost.html')
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+        user_name = request.form['user_name']
+        password = request.form['password']
+        user = User.query.filter_by(user_name=user_name).first()
+
+        if not user:
+            flash('invalid username')
+            return redirect('/login')
+        elif user and user.password != password:
+            flash('Password is incorrect')
+            return redirect('/login')
+        elif user and user.password == password:
+            session['user_name'] = user_name
+            return redirect('/newpost')
+    else:
+        return render_template('login.html')
+         
+
+
+@app.route('/signup', methods=['POST', 'GET'])
+def signup():
+    pass
 if __name__=='__main__':
     app.run()
