@@ -2,10 +2,24 @@
 <html>
     <head>
         <title>My Blog Page</title>
-        <style></style>
+        <style>
+          nav li{
+            padding: 5px;
+            display: inline;
+          }
+        </style>
     </head>
     <body>
-        <a href='/blog'>Main Blog Page</a> | <a href='/newpost'>Add New Post</a>
+      <nav>
+        <ul>
+          <li><a href='/'>Home</a></li>
+          <li><a href='/blog'>All Posts</a></li>
+          <li><a href='/newpost'>New Post</a></li>
+          <li><a href='/login'>Login</a></li>
+          <li><a href='/logout'>Logout</a></li>  
+        </ul>
+      </nav>
+      
 
         {% with messages = get_flashed_messages() %}
         {% if messages %}
